@@ -21,8 +21,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 #[AsCommand(name: 'app:parse-books')]
 class ParseBooksCommand extends Command
 {
-    private array $booksData;
-    private array $thumbnailsData;
+    private array $booksData = [];
+    private array $thumbnailsData = [];
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -165,7 +165,7 @@ class ParseBooksCommand extends Command
                 $existingCategories
             );
 
-            if (!empty($data['thumbnailUrl'])) {
+            if (!empty($bookData['thumbnailUrl'])) {
                 $this->thumbnailsData[] = [
                     'book' => $book,
                     'response' => $this->http->request(
