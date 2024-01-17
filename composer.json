@@ -10,15 +10,20 @@
     "doctrine/doctrine-bundle": "^2.8",
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/orm": "^2.14",
+    "easycorp/easyadmin-bundle": "^4.8",
     "symfony/console": "6.4.*",
     "symfony/dotenv": "6.4.*",
     "symfony/flex": "^2",
     "symfony/framework-bundle": "6.4.*",
+    "symfony/http-client": "6.4.*",
+    "symfony/mailer": "6.4.*",
+    "symfony/mime": "6.4.*",
     "symfony/runtime": "6.4.*",
     "symfony/yaml": "6.4.*"
   },
   "require-dev": {
-    "symfony/maker-bundle": "^1.48"
+    "symfony/maker-bundle": "^1.48",
+    "symfony/stopwatch": "6.4.*"
   },
   "config": {
     "preferred-install": {
