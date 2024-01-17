@@ -44,6 +44,9 @@ class ContactMessageType extends AbstractType
                     new Length(['max' => 255]),
                 ],
             ])
+            ->add('captcha', RecaptchaType::class, [
+                'mapped' => false,
+            ])
             ->add('send', SubmitType::class)
         ;
     }

@@ -1,0 +1,6 @@
+{% block recaptcha_row %}
+    <div class="mb-3">
+        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}

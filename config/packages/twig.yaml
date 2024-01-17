@@ -2,6 +2,9 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes:
         - 'bootstrap_5_layout.html.twig'
+        - 'form/custom_types.html.twig'
+    globals:
+        recaptcha_site_key: '%env(RECAPTCHA_SITE_KEY)%'
 
 when@test:
     twig:

@@ -12,6 +12,8 @@ parameters:
     app.contact_sender_email: "%env(CONTACT_SENDER_EMAIL)%"
     app.contact_receiver_email: "%env(CONTACT_RECEIVER_EMAIL)%"
 
+    recaptcha.site_key: "%env(RECAPTCHA_SITE_KEY)%"
+    recaptcha.secret_key: "%env(RECAPTCHA_SECRET_KEY)%"
 
 services:
     # default configuration for services in *this* file

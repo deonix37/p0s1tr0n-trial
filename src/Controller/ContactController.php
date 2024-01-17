@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\ContactMessage;
 use App\Form\ContactMessageType;
+use App\Service\RecaptchaService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -18,6 +20,7 @@ class ContactController extends AbstractController
 {
     public function __construct(
         private MailerInterface $mailer,
+        private RecaptchaService $recaptchaService,
         private ParameterBagInterface $config
     )
     {
@@ -35,7 +38,11 @@ class ContactController extends AbstractController
         );
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+            && $this->validateCaptcha($form, $request)
+        ) {
             $message = $form->getData();
 
             $entityManager->persist($message);
@@ -50,6 +57,19 @@ class ContactController extends AbstractController
         return $this->render('contact.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    private function validateCaptcha(Form $form, Request $request): bool
+    {
+        $response = $this->recaptchaService
+            ->validateResponse($request);
+
+        if (!$response['success']) {
+            $error = $response['error-codes'][0] ?? 'Recaptcha error';
+            $form->get('captcha')->addError(new FormError($error));
+        }
+
+        return $response['success'];
     }
 
     private function sendEmail(Form $form, Request $request): void
