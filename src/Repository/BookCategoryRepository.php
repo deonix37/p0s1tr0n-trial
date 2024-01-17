@@ -5,44 +5,30 @@ namespace App\Repository;
 use App\Entity\BookCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-/**
- * @extends ServiceEntityRepository<BookCategory>
- *
- * @method BookCategory|null find($id, $lockMode = null, $lockVersion = null)
- * @method BookCategory|null findOneBy(array $criteria, array $orderBy = null)
- * @method BookCategory[]    findAll()
- * @method BookCategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class BookCategoryRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private ParameterBagInterface $config
+    )
     {
         parent::__construct($registry, BookCategory::class);
     }
 
-//    /**
-//     * @return BookCategory[] Returns an array of BookCategory objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getOrCreateDefault(): BookCategory
+    {
+        $title = $this->config->get('app.book_parse_default_category');
 
-//    public function findOneBySomeField($value): ?BookCategory
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($category = $this->findOneBy(['title' => $title])) {
+            return $category;
+        }
+
+        $category = new BookCategory();
+        $category->setTitle($title);
+        $this->getEntityManager()->persist($category);
+
+        return $category;
+    }
 }
