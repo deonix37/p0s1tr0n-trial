@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Book;
+use App\Entity\BookCategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
@@ -67,5 +69,76 @@ class BookRepository extends ServiceEntityRepository
         }
 
         return $book;
+    }
+
+    public function getPaginator(
+        int $page = 1,
+        ?string $title = null,
+        ?string $authorName = null,
+        ?int $statusId = null,
+        ?BookCategory $category = null,
+    ): Paginator
+    {
+        $pageSize = $this->config->get('app.book_paginator_page_size');
+
+        $books = $this->createQueryBuilder('b')
+            ->orderBy('b.id', 'DESC');
+
+        if ($category) {
+            $books->andWhere(
+                    ':category MEMBER OF b.categories
+                    OR :subcategories MEMBER OF b.categories'
+                )
+                ->setParameter('category', $category)
+                ->setParameters([
+                    'category' => $category,
+                    'subcategories' => $category->getChildCategories(),
+                ]);
+        }
+
+        if ($title) {
+            $books->andWhere('b.title LIKE :title')
+                ->setParameter(
+                    'title',
+                    '%' . addcslashes($title, '%_') . '%'
+                );
+        }
+
+        if ($authorName) {
+            $books->join('b.authors', 'ba')
+                ->andWhere('ba.name LIKE :authorName')
+                ->setParameter(
+                    'authorName',
+                    '%' . addcslashes($authorName, '%_') . '%'
+                );
+        }
+
+        if ($statusId) {
+            $books->andWhere('b.status = :statusId')
+                ->setParameter('statusId', $statusId);
+        }
+
+        $paginator = new Paginator($books);
+        $paginator->getQuery()
+            ->setFirstResult($pageSize * ($page - 1))
+            ->setMaxResults($pageSize);
+
+        return $paginator;
+    }
+
+    public function getRelatedBooks(Book $book, ?int $limit = null): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere(
+                'b != :book',
+                ':categories MEMBER OF b.categories'
+            )
+            ->setParameters([
+                'book' => $book,
+                'categories' => $book->getCategories(),
+            ])
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

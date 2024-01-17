@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book Categories{% endblock %}
+
+{% block content %}
+    <h1>{{ block('title') }}</h1>
+
+    {% if bookCategories %}
+        <div class="row row-cols-2 row-cols-lg-3 g-3 mt-3">
+            {% for bookCategory in bookCategories %}
+                <div class="col">
+                    <a
+                        class="card h-100"
+                        href="{{ path('book-category', {id: bookCategory.id}) }}"
+                    >
+                        <div class="card-body py-2">{{ bookCategory.title }}</div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        No book categories found
+    {% endif %}
+{% endblock %}

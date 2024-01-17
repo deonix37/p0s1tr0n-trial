@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ category.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ block('title') }}</h1>
+    <div class="row gap-3 mt-3">
+        <div class="col-12 col-lg-3 pb-3 h-100 border-end border-bottom">
+            <form>
+                <div class="mb-3">
+                    <label class="form-label" for="filter_title">Title</label>
+                    <input id="filter_title" class="form-control" name="title" value="{{ app.request.get('title') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="filter_author_name">Author</label>
+                    <input id="filter_author_name" class="form-control" name="author_name" value="{{ app.request.get('author_name') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="filter_status">Status</label>
+                    <select id="filter_status" class="form-select" name="status_id">
+                        <option></option>
+
+                        {% for bookStatus in bookStatuses %}
+                            <option
+                                value="{{ bookStatus.id }}"
+                                {{ app.request.get('status_id') == bookStatus.id ? 'selected' : '' }}
+                            >
+                                {{ bookStatus.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn btn-primary w-100">Search books</button>
+            </form>
+        </div>
+        <div class="col">
+            {% if subcategories %}
+                <div class="row row-cols-2 row-cols-lg-3 g-3 mb-3">
+                    {% for subcategory in subcategories %}
+                        <div class="col">
+                            <a
+                                class="card h-100 bg-light"
+                                href="{{ path('book-category', {id: subcategory.id}) }}"
+                            >
+                                <div class="card-body py-2">{{ subcategory.title }}</div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if booksPaginator|length %}
+                <div class="row row-cols-2 row-cols-lg-3 g-3">
+                    {% for book in booksPaginator %}
+                        <div class="col">
+                            <a
+                                class="card h-100"
+                                href="{{ path('book', {id: book.id}) }}"
+                            >
+                                <div class="card-body py-2">
+                                    <div class="card-title">{{ book.title }}</div>
+                                    <p class="card-text small">{{ book.isbn }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-3">Total items: {{ booksPaginator|length }}</div>
+                <ul class="pagination flex-wrap mt-3">
+                    {% set pageCount = (booksPaginator|length / booksPaginator.query.maxResults)|round(0, 'ceil') %}
+
+                    {% for page in 1 .. pageCount %}
+                        <li class="page-item">
+                            <a
+                                class="page-link {{ app.request.query.get('page', 1) == page ? 'active' : '' }}"
+                                href="{{ path(
+                                    app.request.attributes.get('_route'),
+                                    app.request.query.all
+                                    |merge(app.request.attributes.get('_route_params'))
+                                    |merge({'page': page})
+                                ) }}"
+                            >
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                No books found
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

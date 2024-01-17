@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\BookCategory;
 use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -39,6 +41,20 @@ class BookCategoryCrudController extends AbstractCrudController
                         ->setParameter('entity', $entity);
                     }
                 }
+        );
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions->add(
+            Crud::PAGE_INDEX,
+            Action::new('viewOnSite')->linkToUrl(
+                function (BookCategory $bookCategory) {
+                    return $this->generateUrl('book-category', [
+                        'id' => $bookCategory->getId(),
+                    ]);
+                },
+            ),
         );
     }
 }
