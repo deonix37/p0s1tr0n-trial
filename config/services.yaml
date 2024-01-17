@@ -9,6 +9,9 @@ parameters:
 
     app.book_paginator_page_size: 50
 
+    app.contact_sender_email: "%env(CONTACT_SENDER_EMAIL)%"
+    app.contact_receiver_email: "%env(CONTACT_RECEIVER_EMAIL)%"
+
 
 services:
     # default configuration for services in *this* file
