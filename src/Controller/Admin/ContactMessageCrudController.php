@@ -15,7 +15,8 @@ class ContactMessageCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud->setEntityLabelInSingular('Contact Message')
+        return $crud->setDefaultSort(['id' => 'ASC'])
+            ->setEntityLabelInSingular('Contact Message')
             ->setEntityLabelInPlural('Contact Messages');
     }
 }

@@ -21,6 +21,11 @@ class BookCrudController extends AbstractCrudController
         return Book::class;
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setDefaultSort(['id' => 'ASC']);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [

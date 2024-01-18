@@ -21,7 +21,8 @@ class BookCategoryCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud->setEntityLabelInSingular('Book Category')
+        return $crud->setDefaultSort(['id' => 'ASC'])
+            ->setEntityLabelInSingular('Book Category')
             ->setEntityLabelInPlural('Book Categories');
     }
 
